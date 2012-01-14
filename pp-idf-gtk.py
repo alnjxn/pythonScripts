@@ -17,7 +17,6 @@ def idfReplace(inFile):
 	# For every replacement value in list of values:
 	for thisAngle in angles:
 	    # Open the input file
-	    #inFile = open(simulationinFile)
 	    idfFile = open(inFile)
 	    # Open the output file
 	    outFileName = "/home/alan/Desktop/out/output-" + str(thisAngle) + "-degree-rotation.idf";
@@ -27,7 +26,6 @@ def idfReplace(inFile):
 	    # For every line in the input file:
 	    for line in idfFile:
 	        # If searchString is found, replace it with thisAngle
-	        #newLine = line.replace(searchString, thisAngle)
 	        newLine = line.replace(searchString, str(thisAngle))
 	        # Write the line to the output file
 	        outFile.write(newLine)
@@ -51,8 +49,8 @@ response = dialog.run()
 
 if response == gtk.RESPONSE_OK:
     #print dialog.get_filename(), 'selected'
-    simulationinFile = dialog.get_filename()
-    idfReplace(simulationinFile)
+    getFile = dialog.get_filename()
+    idfReplace(getFile)
 elif response == gtk.RESPONSE_CANCEL:
     print 'Closed, no files selected'
 dialog.destroy()
