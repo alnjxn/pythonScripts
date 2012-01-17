@@ -11,6 +11,7 @@ if gtk.pygtk_version < (2,3,90):
 class userEntry:
     def enter_callback(self, widget, entry):
         entry_text = entry.get_text()
+        searchString = entry_text
         print "Entry contents: %s\n" % entry_text
 
     def entry_toggle_editable(self, checkbutton, entry):
@@ -22,7 +23,7 @@ class userEntry:
     def __init__(self):
         # create a new window
         window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        window.set_size_request(350, 100)
+        window.set_size_request(225, 100)
         window.set_title("Search String")
         window.connect("delete_event", lambda w,e: gtk.main_quit())
 
@@ -46,15 +47,13 @@ class userEntry:
         vbox.add(hbox)
         hbox.show()
                                   
-        button = gtk.Button(stock=gtk.STOCK_CLOSE)
-        button.connect("clicked", lambda w: gtk.main_quit())
+        button = gtk.Button(stock=gtk.STOCK_OK)
+        button.connect("clicked", self.enter_callback, entry)
         vbox.pack_start(button, True, True, 0)
         button.set_flags(gtk.CAN_DEFAULT)
         button.grab_default()
         button.show()
         window.show()
-        
-        searchString = entry.get_text()
 
 def userSave():
 	saveDialog = gtk.FileChooserDialog("Select output directory..", None, 
@@ -64,20 +63,6 @@ def userSave():
 	
 	saveDialog.set_default_response(gtk.RESPONSE_OK)
 	response = saveDialog.run()
-
-#def main():
-    #gtk.main()
-    #return 0
-
-#if __name__ == "__main__":
-    #userEntry()
-    #main()
-
-# What string are we looking for?
-#searchString = "$$ReplaceThis$$"
-
-# What do we want to replace it with?
-angles = range(0, 360)
 
 def idfReplace(inFile):
 	# For every replacement value in list of values:
@@ -100,26 +85,38 @@ def idfReplace(inFile):
 	idfFile.close()
 	print "Finished the whole script!"
 
-dialog = gtk.FileChooserDialog("Select IDF File..", None, 
-	gtk.FILE_CHOOSER_ACTION_OPEN, 
-	(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
-	gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-dialog.set_default_response(gtk.RESPONSE_OK)
+def userDialog():
+	dialog = gtk.FileChooserDialog("Select IDF File..", None, 
+		gtk.FILE_CHOOSER_ACTION_OPEN, 
+		(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
+		gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+	dialog.set_default_response(gtk.RESPONSE_OK)
+	
+	filter = gtk.FileFilter()
+	filter.set_name("IDF files")
+	filter.add_pattern("*.idf")
+	dialog.add_filter(filter)
+	
+	response = dialog.run()
+	
+	if response == gtk.RESPONSE_OK:
+	    #print dialog.get_filename(), 'selected'
+	    getFile = dialog.get_filename()
+	    userEntry()
+	    userSave()
+	    idfReplace(getFile)
+	elif response == gtk.RESPONSE_CANCEL:
+	    print 'Closed, no files selected'
+	dialog.destroy()
 
-filter = gtk.FileFilter()
-filter.set_name("IDF files")
-filter.add_pattern("*.idf")
-dialog.add_filter(filter)
+# What do we want to replace it with?
+angles = (0, 90, 180, 270)
+	
+def main():
+	gtk.main()
+	return 0
 
-response = dialog.run()
-
-if response == gtk.RESPONSE_OK:
-    #print dialog.get_filename(), 'selected'
-    getFile = dialog.get_filename()
-    userEntry()
-    userSave()
-    idfReplace(getFile)
-elif response == gtk.RESPONSE_CANCEL:
-    print 'Closed, no files selected'
-dialog.destroy()
+if __name__ == "__main__":
+    print "hello"
+    main()
 
