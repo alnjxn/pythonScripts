@@ -8,11 +8,38 @@ if gtk.pygtk_version < (2,3,90):
    print "PyGtk 2.3.90 or later required for this example"
    raise SystemExit
 
+# Provide user with dialog box to select the IDF file to process
+def userDialog():
+	dialog = gtk.FileChooserDialog("Select IDF File to Process..", None, 
+		gtk.FILE_CHOOSER_ACTION_OPEN, 
+		(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
+		gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+	dialog.set_default_response(gtk.RESPONSE_OK)
+	
+	filter = gtk.FileFilter()
+	filter.set_name("IDF files")
+	filter.add_pattern("*.idf")
+	dialog.add_filter(filter)
+	
+	response = dialog.run()
+	
+	if response == gtk.RESPONSE_OK:
+	    #print dialog.get_filename(), 'selected'
+	    getFile = dialog.get_filename()
+	    userEntry()
+	    #userSave()
+	    #idfReplace(getFile)
+	elif response == gtk.RESPONSE_CANCEL:
+	    print 'Closed, no files selected'
+	dialog.destroy()
+
+# Have user select the search string to be replaced
 class userEntry:
     def enter_callback(self, widget, entry):
         entry_text = entry.get_text()
         searchString = entry_text
         print "Entry contents: %s\n" % entry_text
+        userSave()
 
     def entry_toggle_editable(self, checkbutton, entry):
         entry.set_editable(checkbutton.get_active())
@@ -55,6 +82,8 @@ class userEntry:
         button.show()
         window.show()
 
+# Provide user with dialog box to select folder where processed
+# files should be placed
 def userSave():
 	saveDialog = gtk.FileChooserDialog("Select output directory..", None, 
 	gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER, 
@@ -62,7 +91,15 @@ def userSave():
 	gtk.STOCK_OPEN, gtk.RESPONSE_OK))
 	
 	saveDialog.set_default_response(gtk.RESPONSE_OK)
-	response = saveDialog.run()
+	saveResponse = saveDialog.run()
+	
+	if saveResponse == gtk.RESPONSE_OK:
+		getSave = saveDialog.get_folder()
+		idfReplace(getFile)
+	elif response == gtk.RESPONSE_CANCEL:
+	    print 'Closed, no folder selected'
+	saveDialog.destroy()
+
 
 def idfReplace(inFile):
 	# For every replacement value in list of values:
@@ -70,7 +107,7 @@ def idfReplace(inFile):
 	    # Open the input file
 	    idfFile = open(inFile)
 	    # Open the output file
-	    outFileName = "/home/alan/Desktop/out/output-" + str(thisAngle) + "-degree-rotation.idf";
+	    outFileName = str(getSave) + "output-" + str(thisAngle) + "-degree-rotation.idf";
 	    outFile = open(outFileName,'w')
 	    print "Now writing file:", outFileName    
 	 
@@ -85,29 +122,6 @@ def idfReplace(inFile):
 	idfFile.close()
 	print "Finished the whole script!"
 
-def userDialog():
-	dialog = gtk.FileChooserDialog("Select IDF File..", None, 
-		gtk.FILE_CHOOSER_ACTION_OPEN, 
-		(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
-		gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-	dialog.set_default_response(gtk.RESPONSE_OK)
-	
-	filter = gtk.FileFilter()
-	filter.set_name("IDF files")
-	filter.add_pattern("*.idf")
-	dialog.add_filter(filter)
-	
-	response = dialog.run()
-	
-	if response == gtk.RESPONSE_OK:
-	    #print dialog.get_filename(), 'selected'
-	    getFile = dialog.get_filename()
-	    userEntry()
-	    userSave()
-	    idfReplace(getFile)
-	elif response == gtk.RESPONSE_CANCEL:
-	    print 'Closed, no files selected'
-	dialog.destroy()
 
 # What do we want to replace it with?
 angles = (0, 90, 180, 270)
@@ -117,6 +131,6 @@ def main():
 	return 0
 
 if __name__ == "__main__":
-    print "hello"
+    userDialog()
     main()
 
