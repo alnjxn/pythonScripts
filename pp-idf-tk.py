@@ -4,8 +4,6 @@ from tkFileDialog import askdirectory
 from tkSimpleDialog import askstring
 import tkMessageBox
 
-root = Tk()
-
 # What do we want to replace it with?
 angles = (0, 90, 180, 270)
 
@@ -73,12 +71,7 @@ def idfReplace(infile):
 	    outFile.close()
 	    print "Finished writing!" 
 	idfFile.close()
-	print "Finished the whole script!"
-
-	
-# def main():
-# 	gtk.main()
-# 	return 0
+	tkMessageBox.showinfo("Info", "Finished the whole script!\n\nWrote files to " + getsave)
 
 if __name__ == "__main__":
     userDialog()
