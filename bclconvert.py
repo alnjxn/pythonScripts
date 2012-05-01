@@ -51,10 +51,14 @@ def trnCon(f, o):
     line = f.readline()
     x = []
     while line:
-        str1 = "Construction,"
-        str2 = ";"
-        str3 = ","
-        if re.search(str1, line):
+        str1 = 'Construction,'
+        str2 = ';'
+        str3 = ','
+        str4 = 'CostSource:'
+        
+        if re.search(str4, line):
+            break 
+        elif re.search(str1, line):
             line = f.readline()
             cName = line.split(str3)[0].strip()
             cLayers = cName + ' Layers'
@@ -80,7 +84,7 @@ def trnCon(f, o):
             output.write(')\n')
             output.write('\t..\n\n')
 
-            output.write('"' + cName + '"' + " = CONSTRUCTION\n")
+            output.write('"' + cName + '"' + ' = CONSTRUCTION\n')
             output.write('\tTYPE\t\t= LAYERS\n')
             output.write('\tLAYERS\t\t= "' + cLayers + '"\n')
             output.write('\t..\n\n')
@@ -114,8 +118,19 @@ def trnMat(f, o):
             mDens = line.split(str3)[0].strip()
             mDens = float(mDens) * 0.062428
             line = f.readline()
-            mSphe = line.split(str2)[0].strip()
-            mSphe = float(mSphe) * 0.000239
+
+            if not re.search(str2, line):
+                mSphe = line.split(str3)[0].strip()
+                mSphe = float(mSphe) * 0.000239
+                line = f.readline()
+                mAbsT = line.split(str3)[0].strip()
+                line = f.readline()
+                mAbsS = line.split(str3)[0].strip()
+                line = f.readline()
+                mAbsV = line.split(str2)[0].strip()
+            else:
+                mSphe = line.split(str2)[0].strip()
+                mSphe = float(mSphe) * 0.000239
 
             output.write('"' + mName + '" = MATERIAL\n')
             output.write('\tTYPE\t\t\t= PROPERTIES\n')
